@@ -1,0 +1,143 @@
+﻿import React, { useState, useEffect } from "react";
+import axios from "axios";
+
+function WebDesignPage()
+{
+    const [baseUrl, setBaseUrl] = useState("https://smstestbed.nist.gov/vds/");
+    const [sampleCount, setSampleCount] = useState(1000);
+    const [currentData, setCurrentData] = useState([]);
+const [sampleData, setSampleData] = useState([]);
+
+useEffect(() => {
+const fetchData = async () => {
+try
+{
+    // Fetch current data
+    const currentResponse = await axios.get(`${ baseUrl}
+    current`);
+setCurrentData(currentResponse.data);
+
+// Fetch sample data
+const sampleResponse = await axios.get(
+          `${baseUrl}sample? count =${sampleCount}`
+        );
+setSampleData(sampleResponse.data);
+      } catch (error)
+{
+    console.error("Error fetching data:", error);
+}
+    };
+
+const interval = setInterval(fetchData, 1000); // Fetch data every second
+
+return () => clearInterval(interval); // Cleanup interval on component unmount
+  }, [baseUrl, sampleCount]);
+
+const handleBaseUrlChange = (event) => {
+    setBaseUrl(event.target.value);
+};
+
+const handleSampleCountChange = (event) => {
+    setSampleCount(event.target.value);
+};
+
+return (
+
+  < div className = "container" >
+
+     < header >
+
+       < h1 > Welcome to Our Website</h1>
+        <nav>
+          <ul>
+            <li>
+              <a href="#home">Home</a>
+            </li>
+            <li>
+              <a href="#about">About</a>
+            </li>
+            <li>
+              <a href="#services">Services</a>
+            </li>
+            <li>
+              <a href="#contact">Contact</a>
+            </li>
+          </ul>
+        </nav>
+      </header>
+      <section id="home">
+        <h2>Current Data Section</h2>
+        <ul>
+          {currentData.map((device, index) => (
+            < li key ={ index}>
+   
+                 < p >{ device.name}</ p >
+      
+                    < ul >
+                {
+    device.dataItems.map((item, idx) => (
+
+     < li key ={ idx}>
+                    { item.name}: { item.value}
+                  </ li >
+                ))}
+              </ ul >
+            </ li >
+          ))}
+        </ ul >
+      </ section >
+      < section id = "sample" >
+ 
+         < h2 > Sample Data Section</h2>
+            <ul>
+          {sampleData.map((device, index) => (
+                <li key ={index}>
+     
+                   < p >{ device.name}</ p >
+        
+                      < ul >
+                {
+    device.dataItems.map((item, idx) => (
+
+     < li key ={ idx}>
+                    { item.name}: { item.value}
+                  </ li >
+                ))}
+              </ ul >
+            </ li >
+          ))}
+        </ ul >
+      </ section >
+      < section >
+        < h2 > Change Settings </ h2 >
+   
+           < div >
+   
+             < label htmlFor = "baseUrl" > Base URL:</ label >
+        
+                  < input
+            type = "text"
+            id = "baseUrl"
+            value ={ baseUrl}
+onChange ={ handleBaseUrlChange}
+          />
+        </ div >
+        < div >
+          < label htmlFor = "sampleCount" > Sample Count:</ label >
+     
+               < input
+            type = "number"
+            id = "sampleCount"
+            value ={ sampleCount}
+onChange ={ handleSampleCountChange}
+          />
+        </ div >
+      </ section >
+      < footer >
+        < p > &copy; 2024 Web Design Company. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
+
+export default WebDesignPage;
